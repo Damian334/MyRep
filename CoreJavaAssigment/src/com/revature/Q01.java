@@ -1,17 +1,8 @@
 package com.revature;
 
-public class Q1 {
-    
-    public static void execute(){
-        int[] tab = {1,0,5,6,3,2,3,7,9,8,4};
-        bubble(tab);
-        for(int i:tab){
-            System.out.print(i);
-        }
-        System.out.println();
-    }
+public class Q01 {
 
-    private static void bubble(int[] tab) {
+    public static void bubble(int[] tab) {
 
         for (int i=0;i<tab.length-1;i++) {
             for (int j=0;j<tab.length-i-1;j++) {
@@ -22,6 +13,5 @@ public class Q1 {
                 }
             }
         }
-
     }
 }
