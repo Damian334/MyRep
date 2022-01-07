@@ -6,7 +6,7 @@ public class Q16 {
         
         System.out.println("you writed:");
         for(String s:args){
-            System.out.println(s);
+            System.out.println("\""+s+"\" word have: "+s.length()+" characters");
         }
     }
 }
