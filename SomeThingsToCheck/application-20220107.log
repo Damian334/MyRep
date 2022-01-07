@@ -1,0 +1,3 @@
+2022-01-07 19:56:04.591 [main] ERROR com.revature.SomeThingsToCheck - error: java.lang.ArrayIndexOutOfBoundsException: -2
+2022-01-07 19:57:24.274 [main] ERROR com.revature.SomeThingsToCheck - error: java.lang.ArrayIndexOutOfBoundsException: -2
+2022-01-07 19:58:16.667 [main] ERROR com.revature.SomeThingsToCheck - error: java.lang.ArrayIndexOutOfBoundsException: -2
