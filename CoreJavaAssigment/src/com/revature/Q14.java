@@ -49,7 +49,7 @@ public class Q14 {
         while (true) {
             try {
                 System.out.println("enter number: ");
-                nr = Integer.valueOf(scn.nextLine().trim());
+                nr = Double.valueOf(scn.nextLine().trim());
                 break;
             } catch (Exception e) {
                 System.out.println("error you need to type a number");

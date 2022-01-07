@@ -58,6 +58,19 @@ public class Driver {
         //Q14.execute();
         
         Q15.execute();
+        
+        ////////////////////////////////
+        
+        //Q16 just run in separate folder
+        
+        //Q17.execute();
+        
+        Q18.execute();
+        
+        Q19.execute();
+        
+        Q20.execute();
+        
     }
     
     public static void read(int[] tab){

@@ -1,4 +1,4 @@
-package com.revature.commandline;
+package com.revature;
 
 public class Q16 {
 
