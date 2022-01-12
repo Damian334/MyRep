@@ -1,29 +1,18 @@
 package com.revature.app;
 
-import com.revature.entity.Account;
-import com.revature.entity.User;
+import com.revature.entity.ConsoleAccount;
+import com.revature.entity.ConsoleUser;
 import com.revature.entity.worker.Admin;
+import com.revature.entity.worker.ConsoleAdmin;
 import com.revature.entity.worker.Employe;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.HashSet;
 import java.util.Scanner;
-import java.util.Set;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class Bank {
-
-    private static final Logger logger = LogManager.getLogger(Bank.class);
-    public static Set<User> usersPool = new HashSet<>();
-    public static Set<Account> accountsPool = new HashSet<>();
-
+    
     public void run() {
         Scanner scn = new Scanner(System.in);
-        this.read();//load at begin
+        Store store = new Store();
+        store.read();//load at begin
         while (true) {
             System.out.println("select options: ");
             System.out.println("1. Customer");
@@ -42,8 +31,8 @@ public class Bank {
                     adminSelected(scn);
                     break;
                 default:
-                    System.out.println("usersPool " + usersPool.size() + " , accountsPool " + accountsPool.size());
-                    this.save();//save at end
+                    System.out.println("usersPool " + Store.usersPool.size() + " , accountsPool " + Store.accountsPool.size());
+                    store.save();//save at the end
                     return;
             }
         }
@@ -59,7 +48,7 @@ public class Bank {
             String nr = scn.nextLine();
             switch (nr) {
                 case "1":
-                    User u = User.login(usersPool);
+                    ConsoleUser u = ConsoleUser.login(Store.usersPool);
                     if (u != null) {
                         userLoged(scn, u);
                     } else {
@@ -69,8 +58,8 @@ public class Bank {
                     }
                     return;
                 case "2":
-                    User u2 = new User();
-                    u2.registration(usersPool);
+                    ConsoleUser u2 = new ConsoleUser();
+                    u2.registration(Store.usersPool);
                     return;
                 default:
                     return;
@@ -78,7 +67,7 @@ public class Bank {
         }
     }
 
-    private void userLoged(Scanner scn, User user) {
+    private void userLoged(Scanner scn, ConsoleUser user) {
         while (true) {
             System.out.println("select options: ");
             System.out.println("1. add account");
@@ -89,18 +78,21 @@ public class Bank {
             switch (nr) {
                 case "1":
                     user.addAccountToUser();
+                    scn.nextLine();
                     break;
                 case "2":
                     System.out.println(user.getUserConfirmedAccountInfo());//not working till i will add admin
+                    scn.nextLine();
                     break;
                 case "3":
                     String accountName = scn.nextLine();
-                    Account ac = user.getUserConfirmedAccount(accountName);
+                    ConsoleAccount ac = (ConsoleAccount)user.getUserConfirmedAccount(accountName);
                     if (ac != null) {
                         userLogedAccountOperations(scn, user, ac);
                     } else {
                         System.out.println("the account \"" + accountName + "\" dosnt exist");
                     }
+                    scn.nextLine();
                     break;
                 default:
                     return;
@@ -108,7 +100,7 @@ public class Bank {
         }
     }
 
-    private void userLogedAccountOperations(Scanner scn, User user, Account ac) {
+    private void userLogedAccountOperations(Scanner scn, ConsoleUser user, ConsoleAccount ac) {
         while (true) {
             System.out.println("select options: ");
             System.out.println("1. deposit");
@@ -119,12 +111,15 @@ public class Bank {
             switch (nr) {
                 case "1":
                     ac.deposit(user);
+                    scn.nextLine();
                     break;
                 case "2":
                     ac.withdraw(user);
+                    scn.nextLine();
                     break;
                 case "3":
                     ac.transfer(user);
+                    scn.nextLine();
                     break;
                 default:
                     return;
@@ -141,16 +136,19 @@ public class Bank {
             System.out.println("4. show all no accepted applications for accounts");
             System.out.println("to exit type anything");
             String nr = scn.nextLine();
-            Employe emp = new Employe(this.usersPool, this.accountsPool);
+            Employe emp = new ConsoleAdmin(Store.usersPool, Store.accountsPool);
             switch (nr) {
                 case "1":
                     emp.showAccountsInformation();
+                    scn.nextLine();
                     break;
                 case "2":
                     emp.showAccountsBalances();
+                    scn.nextLine();
                     break;
                 case "3":
                     emp.showUsersInformation();
+                    scn.nextLine();
                     break;
                 case "4":
                     emp.approveAccounts();
@@ -173,24 +171,27 @@ public class Bank {
 
             System.out.println("to exit type anything");
             String nr = scn.nextLine();
-            Admin adm = new Admin(this.usersPool, this.accountsPool);
+            Admin adm = new ConsoleAdmin(Store.usersPool, Store.accountsPool);
             switch (nr) {
                 case "1":
                     adm.showAccountsInformation();
+                    scn.nextLine();
                     break;
                 case "2":
                     adm.showAccountsBalances();
+                    scn.nextLine();
                     break;
                 case "3":
                     adm.showUsersInformation();
+                    scn.nextLine();
                     break;
                 case "4":
                     adm.approveAccounts();
                     break;
                 case "5":
-                    User admin = new User("admin", "");
+                    ConsoleUser admin = new ConsoleUser("admin", "");
                     String accountName = scn.nextLine();
-                    Account ac = adm.getAccountByName(accountName);
+                    ConsoleAccount ac = (ConsoleAccount)adm.getAccountByName(accountName);
                     if (ac != null) {
                         userLogedAccountOperations(scn, admin, ac);
                     } else {
@@ -199,7 +200,7 @@ public class Bank {
                     break;
                 case "6":
                     String accountName2 = scn.nextLine();
-                    Account ac2 = adm.getAccountByName(accountName2);
+                    ConsoleAccount ac2 = (ConsoleAccount)adm.getAccountByName(accountName2);
                     if (ac2 != null) {
                         adm.removeAccountByName(ac2);
                     } else {
@@ -211,42 +212,4 @@ public class Bank {
             }
         }
     }
-
-    private void save() {
-        Store store = new Store(usersPool, accountsPool);
-        String fileName = "data.txt";
-        String dir = System.getProperty("user.dir") + "\\" + fileName;
-
-        FileOutputStream fileOutput;
-        try {
-            fileOutput = new FileOutputStream(dir);
-            ObjectOutputStream outputStream = new ObjectOutputStream(fileOutput);
-            outputStream.writeObject(store);
-            fileOutput.close();
-            outputStream.close();
-        } catch (IOException e) {
-            System.out.println("save error: " + e);
-        }
-
-    }
-
-    private void read(){
-        String fileName = "data.txt";
-        String dir = System.getProperty("user.dir") + "\\" + fileName;
-        try {
-            FileInputStream fiStream = new FileInputStream(dir);
-            ObjectInputStream objectStream = new ObjectInputStream(fiStream);
-            Store store = (Store)objectStream.readObject();
-            fiStream.close();
-            objectStream.close();
-            
-            //now i am loading class accounts and users
-            this.usersPool = store.users;
-            this.accountsPool = store.accounts;
-            
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("read error: " + e);
-        }
-    }
-
 }

@@ -14,6 +14,10 @@ public class Admin extends Employe {
     public Admin(Set<User> usersPool, Set<Account> accountsPool) {
         super(usersPool, accountsPool);
     }
+    
+    public Admin(){
+        super();
+    }
 
     public Account getAccountByName(String accName) {
         for (Account a : accountsPool) {
@@ -33,6 +37,7 @@ public class Admin extends Employe {
             a.getUser().getUserAccounts().remove(ac);
         }
         System.out.println("account "+ac.getAccountName()+" was removed");
+        logger.info("account "+ac.getAccountName()+" was removed");
         accountsPool.remove(ac);
         return true;
     }

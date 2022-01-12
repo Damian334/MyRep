@@ -1,11 +1,10 @@
 package com.revature.entity;
 
-import com.revature.app.Bank;
+import com.revature.app.Store;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,12 +12,11 @@ import org.apache.logging.log4j.Logger;
 public class Account implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(Account.class);
-    public final Set<Account> accountsPool = Bank.accountsPool;
-    private int id;
-    private double funds = 0;
-    private String accountName = null;//e.g 4digitals~
-    private Set<Applicant> applicants = new HashSet<Applicant>();
-
+    public final Set<Account> accountsPool = Store.accountsPool;
+    protected int id;
+    protected double funds = 0;
+    protected String accountName = null;
+    protected Set<Applicant> applicants = new HashSet<Applicant>();
     private List<String> fundsOperations = new ArrayList<String>();
 
     public Account() {
@@ -30,22 +28,23 @@ public class Account implements Serializable {
         this.id = id;
         this.accountName = accountName;
         this.funds = funds;
-    }    
-    
-    public boolean createAccount(User user) {
-        Scanner scn = new Scanner(System.in);
+    }
 
-        System.out.println("write account name:");
-        String name = scn.nextLine();
+    public Object[] createAccount(User user, String name) {
+        return createAccount(user, name, false);
+    }
+
+    public Object[] createAccount(User user, String name, boolean add) {
+        Object[] msg = {false, "", null};
         if (name.contains(";")) {
-            System.out.println("name can't contain sing \";\"");
-            return false;
+            msg[1] = "name can't contain sing \";\"";
+            return msg;
         }
 
         for (Account a : accountsPool) {
             if (a.accountName.equals(name)) {
-                System.out.println("account \"" + name + "\" already exist");
-                return false;
+                msg[1] = "account \"" + name + "\" already exist";
+                return msg;
             }
         }
         accountName = name;
@@ -57,34 +56,36 @@ public class Account implements Serializable {
             }
         }
         this.id = i;
-        accountsPool.add(this);
-        //user.accounts.add(this);
-        System.out.println("account \"" + name + "\" is created");
+        if (add) {
+            accountsPool.add(this);
+        } else {
+            msg[2] = this;
+        }
         logger.info("account \"" + name + "\" is created");
-        return true;
+        msg[0] = true;
+        msg[1] = "account \"" + name + "\" is created";
+        return msg;
     }
 
     //use when I want to add customer to existing account
-    public boolean addApplicant(User user) {
-        Scanner scn = new Scanner(System.in);
-
-        System.out.println("write account name:");
-        String name = scn.nextLine();
+    public Object[] addApplicant(User user, String name) {
+        Object[] msg = {false, ""};
         for (Account a : accountsPool) {
             if (a.accountName.equals(name)) {
                 Applicant ap = new Applicant(user);
                 if (a.getApplicants().contains(ap)) {
-                    System.out.println("account " + name + " already have joint customer \"" + user.name + "\"");
-                    return false;
+                    msg[1] = "account " + name + " already have joint customer \"" + user.name + "\"";
+                    return msg;
                 }
                 a.applicants.add(ap);
-                System.out.println(user.name + " joint the account \"" + name + "\"");
                 logger.info(user.name + " joint the account \"" + name + "\"");
-                return true;
+                msg[0] = true;
+                msg[1] = user.name + " joint the account \"" + name + "\"";
+                return msg;
             }
         }
-        System.out.println("account \"" + name + "\" dosn't exist");
-        return false;
+        msg[1] = "account \"" + name + "\" dosn't exist";
+        return msg;
     }
 
     @Override
@@ -92,86 +93,79 @@ public class Account implements Serializable {
         return "id: " + id + " , name: " + accountName + " , funds: " + funds;
     }
 
-    public boolean deposit(User user) {
-        Scanner scn = new Scanner(System.in);
-        try {
-            System.out.println("enter a number of money:");
-            double money = Double.valueOf(scn.nextLine());
-            if (money < 0) {
-                System.out.println("you can't deposit negative amounts");
-                return false;
-            } else {
-                this.funds += money;
-                this.fundsOperations.add("user " + user.name + " deposited: " + money);
-                System.out.println("user " + user.name + " deposited: " + money);
-                logger.info("user " + user.name + " deposited: " + money);
-                return true;
-            }
-        } catch (Exception e) {
+    public Object[] deposit(User user, Double money) {
+        Object[] msg = {false, ""};
+        if (money == null) {
             logger.error("deposit error for " + user.name);
-            System.out.println("error you typed wrong value");
+            msg[1] = "error you typed wrong value";
         }
-        return false;
+        if (money < 0) {
+            msg[1] = "you can't deposit negative amounts";
+            return msg;
+        } else {
+            this.funds += money;
+            this.fundsOperations.add("user " + user.name + " deposited: " + money);
+            logger.info("user " + user.name + " deposited: " + money);
+            msg[0] = true;
+            msg[1] = "user " + user.name + " deposited: " + money;
+            return msg;
+        }
     }
 
-    public boolean withdraw(User user) {
-        Scanner scn = new Scanner(System.in);
-        try {
-            System.out.println("enter a number of money:");
-            double money = Double.valueOf(scn.nextLine());
-            if (money < 0) {
-                System.out.println("you can't withdraw negative amounts");
-                return false;
-            } else if (this.funds < money) {
-                System.out.println("there is no such amount of funds in this account");
-                return false;
-            } else {
-                this.funds -= money;
-                this.fundsOperations.add("user " + user.name + " withdraw: " + money);
-                System.out.println("user " + user.name + " withdraw: " + money);
-                logger.info("user " + user.name + " withdraw: " + money);
-                return true;
-            }
-        } catch (Exception e) {
-            logger.error("withdraw error for " + user.name);
-            System.out.println("error you typed wrong value");
+    public Object[] withdraw(User user, Double money) {
+        Object[] msg = {false, ""};
+        if (money == null) {
+            logger.error("deposit error for " + user.name);
+            msg[1] = "error you typed wrong value";
         }
-        return false;
+        if (money < 0) {
+            msg[1] = "you can't withdraw negative amounts";
+            return msg;
+        } else if (this.funds < money) {
+            msg[1] = "there is no such amount of funds in this account";
+            return msg;
+        } else {
+            this.funds -= money;
+            this.fundsOperations.add("user " + user.name + " withdraw: " + money);
+            logger.info("user " + user.name + " withdraw: " + money);
+            msg[0] = true;
+            msg[1] = "user " + user.name + " withdraw: " + money;
+            return msg;
+        }
     }
 
-    public boolean transfer(User user) {
-        Scanner scn = new Scanner(System.in);
-        try {
-            System.out.println("enter a number of money:");
-            double money = Double.valueOf(scn.nextLine());
-            if (money < 0) {
-                System.out.println("you can't withdraw negative amounts");
-                return false;
-            } else if (this.funds < money) {
-                System.out.println("there is no such amount of funds in this account");
-                return false;
-            } else {
-                System.out.println("type a name of account where you want transfer funds");
-                String accName = scn.nextLine();
-                for (Account a : accountsPool) {
-                    if (a.getAccountName().equals(accName)) {
-                        a.funds += money;
-                        this.funds -= money;
-                        this.fundsOperations.add("user " + user.name + " transfered: " + money + " to " + a.getAccountName());
-                        a.fundsOperations.add("user " + user.name + " transfered: " + money + " to " + a.getAccountName());
-                        System.out.println("user " + user.name + " transfered: " + money + " to " + a.getAccountName());
-                        logger.info("user " + user.name + " transfered: " + money + " to " + a.getAccountName());
-                        return true;
-                    }
+    public Object[] transfer(User user, Double money, String accName) {
+        Object[] msg = {false, ""};
+        if (money == null) {
+            logger.error("deposit error for " + user.name);
+            msg[1] = "error you typed wrong value";
+        }
+        if (money < 0) {
+            msg[1] = "you can't withdraw negative amounts";
+            return msg;
+        } else if (this.funds < money) {
+            msg[1] = "there is no such amount of funds in this account";
+            return msg;
+        } else {
+            System.out.println("it is here?1");
+            for (Account a : accountsPool) {
+                if (a.getAccountName().equals(accName)) {
+                    System.out.println("it is here?2");
+                    a.funds += money;
+                    this.funds -= money;
+                    this.fundsOperations.add("user " + user.name + " transfered: " + money + " to " + a.getAccountName());
+                    a.fundsOperations.add("user " + user.name + " transfered: " + money + " to " + a.getAccountName());
+                    logger.info("user " + user.name + " transfered: " + money + " to " + a.getAccountName());
+
+                    System.out.println("it is here?3");
+                    msg[0] = true;
+                    msg[1] = "user " + user.name + " transfered: " + money + " to " + a.getAccountName();
+                    return msg;
                 }
-                System.out.println("the account \"" + accName + "\" dosn't exist");
-                return false;
             }
-        } catch (Exception e) {
-            logger.error("transfer error for " + user.name);
-            System.out.println("error you typed wrong value");
+            msg[1] = "the account \"" + accName + "\" dosn't exist";
+            return msg;
         }
-        return false;
     }
 
     public String getAccountName() {
@@ -206,5 +200,4 @@ public class Account implements Serializable {
         }
         return false;
     }
-    
 }

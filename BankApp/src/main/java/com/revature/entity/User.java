@@ -1,9 +1,8 @@
 package com.revature.entity;
 
-import com.revature.app.Bank;
+import com.revature.app.Store;
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,34 +10,34 @@ import org.apache.logging.log4j.Logger;
 //Customer
 public class User implements Serializable {
 
-    private static final Logger logger = LogManager.getLogger(User.class);
+    protected static final Logger logger = LogManager.getLogger(User.class);
     public int id;
     public String name = null;
     public String password = null;
-    private Set<Account> accountsPool = Bank.accountsPool;
-    
-    public User() {
+    protected Set<Account> accountsPool = Store.accountsPool;
 
+    public User() {
     }
 
     public User(String name, String password) {
         this.name = name;
         this.password = password;
     }
-    
-    public boolean registration(Set<User> usersPool) {
-        Scanner scn = new Scanner(System.in);
 
-        System.out.println("enter name:");
-        name = scn.nextLine();
-        System.out.println("enter password:");
-        password = scn.nextLine();
+    public Object[] registration(Set<User> usersPool, String name, String password) {
+        return registration(usersPool, name, password, false);
+    }
 
-        if(name.contains(";") || password.contains(";")){
-            System.out.println("name or password can't contain sing \";\"");
-            return false;
+    public Object[] registration(Set<User> usersPool, String name, String password, boolean add) {
+        this.name = name;
+        this.password = password;
+        Object[] msg = {false, "", null};
+
+        if (name.contains(";") || password.contains(";")) {
+            msg[1] = "name or password can't contain sing \";\"";
+            return msg;
         }
-        
+
         boolean check = false;
         for (User u : usersPool) {
             if (u.name.equals(name)) {
@@ -47,7 +46,7 @@ public class User implements Serializable {
             }
         }
         if (check) {
-            System.out.println("user already exist");
+            msg[1] = "user already exist";
         } else {
             int i = 1;
             for (User us : usersPool) {
@@ -56,20 +55,19 @@ public class User implements Serializable {
                 }
             }
             this.id = i;
-            usersPool.add(this);
-            System.out.println("user \""+this.name+"\" get created");
-            logger.info("user \""+this.name+"\" get created");
+            if (add) {
+                usersPool.add(this);
+            } else {
+                msg[2] = this;
+            }
+            msg[1] = "user \"" + this.name + "\" get created";
+            logger.info("user \"" + this.name + "\" get created");
         }
-        return !check;//return true when user get created
+        msg[0] = !check;
+        return msg;//return true when user get created
     }
 
-    public static User login(Set<User> usersPool) {
-        Scanner scn = new Scanner(System.in);
-        System.out.println("type user name");
-        String name = scn.nextLine();
-        System.out.println("type user password");
-        String password = scn.nextLine();
-
+    public static User login(Set<User> usersPool, String name, String password) {
         for (User user : usersPool) {
             if (user.name.equals(name) && user.password.equals(password)) {
                 return user;
@@ -79,28 +77,18 @@ public class User implements Serializable {
     }
 
     //not tested because it could be double later because of switch
-    public boolean addAccountToUser() {
-        Scanner scn = new Scanner(System.in);
-
-        System.out.println("do you want to:");
-        System.out.println("1. open new an account");
-        System.out.println("2. joint to already existing account");
-        try {
-            int nr = Integer.valueOf(scn.nextLine());
-            Account ac = new Account();
-            switch (nr) {
-                case 1:
-                    return ac.createAccount(this);
-                case 2:
-                    return ac.addApplicant(this);
-                default:
-                    return false;
-            }
-        } catch (Exception e) {
-            //logger
-            logger.error("addAccountToUser for user "+this.name+" error: "+e);
-            System.out.println("error: " + e);
-            return false;
+    public Object[] addAccountToUser(Integer nr, String err, String name) {
+        Account ac = new Account();
+        switch (nr) {
+            case 1:
+                return ac.createAccount(this, name);
+            case 2:
+                return ac.addApplicant(this, name);
+            default:
+                if (err == null) {
+                    logger.error("addAccountToUser for user " + this.name + " error: " + err);
+                }
+                return null;
         }
     }
 
@@ -109,7 +97,6 @@ public class User implements Serializable {
         return "name: " + name + " , password: " + password;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////
     //this for admin
     public Set<Account> getUserAccounts() {
         Set<Account> list = new HashSet<>();
@@ -172,5 +159,5 @@ public class User implements Serializable {
             return true;
         }
         return false;
-    }    
+    }
 }
