@@ -29,8 +29,3 @@ CREATE TABLE fundsOperations (
 	message VARCHAR(150),
 	account_id NUMERIC
 );
-
-
-
-
-
