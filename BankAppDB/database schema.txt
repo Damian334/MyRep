@@ -1,0 +1,36 @@
+DROP TABLE applicants;
+DROP TABLE fundsOperations;
+DROP TABLE accounts;
+DROP TABLE users;
+
+
+CREATE TABLE users (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR UNIQUE NOT NULL,
+	password VARCHAR
+);
+
+CREATE TABLE accounts (
+    id SERIAL PRIMARY KEY,
+    accountName VARCHAR(50) UNIQUE NOT NULL,
+    funds NUMERIC
+);
+
+CREATE TABLE applicants (
+    id SERIAL PRIMARY KEY,
+    status BOOLEAN,
+	account_id NUMERIC,
+	user_id NUMERIC,
+    CONSTRAINT UC_Person UNIQUE (account_id,user_id)
+);
+
+CREATE TABLE fundsOperations (
+    id SERIAL PRIMARY KEY, --make this automatic from 1 ... 
+	message VARCHAR(150),
+	account_id NUMERIC
+);
+
+
+
+
+
