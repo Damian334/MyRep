@@ -24,11 +24,11 @@ public class AdminController {
         app.get("/admin/accBalances", accountsBalances);
         app.get("/admin/usersInfo", usersInfo);//approve
         app.get("/admin/approve", approveInfo);
-        app.get("/admin/approve/{number}", approve);
-        app.get("/admin/deposit/{name}/{number}", deposit);
-        app.get("/admin/withdraw/{name}/{number}", withdraw);
-        app.get("/admin/transfer/{name}/{name2}/{number}", transfer);
-        app.get("/admin/remove/{name}", remove);
+        app.put("/admin/approve/{number}", approve);
+        app.put("/admin/deposit/{name}/{number}", deposit);
+        app.put("/admin/withdraw/{name}/{number}", withdraw);
+        app.put("/admin/transfer/{name}/{name2}/{number}", transfer);
+        app.delete("/admin/remove/{name}", remove);
     }
 
     public Handler adminPage = ctx -> {
@@ -128,9 +128,9 @@ public class AdminController {
         Admin a = new Admin();
         String accName = ctx.pathParam("name");
         if (a.removeAccountByName(accName)) {
-            ctx.html(view.format("<div>account got removed</div>"));
+            ctx.result("account got removed");
         } else {
-            ctx.html(view.format("<div>the account \"" + accName + "\" dosnt exist</div>"));
+            ctx.result("the account \"" + accName + "\" dosnt exist");
         }
     };
 }
