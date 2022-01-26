@@ -46,10 +46,10 @@ public class AdminTest {
         User userLoged = User.login("name", "pass");
         Object[] res = ac.createAccount(userLoged, "acName");
         assertEquals((boolean) res[0], true);
-        assertEquals(accDao.getAccounts("name").size(), 1);
+        assertEquals(accDao.getAccounts("name",false).size(), 1);
         Admin admin = new Admin();
         assertEquals(admin.removeAccountByName("acName"), true);
-        assertEquals(accDao.getAccounts("name").size(), 0);
+        assertEquals(accDao.getAccounts("name",false).size(), 0);
     }
 
     @Test
@@ -60,9 +60,9 @@ public class AdminTest {
         User userLoged = User.login("name", "pass");
         Object[] res = ac.createAccount(userLoged, "acName");
         assertEquals((boolean) res[0], true);
-        assertEquals(accDao.getAccounts("name").size(), 1);
+        assertEquals(accDao.getAccounts("name",false).size(), 1);
         Admin admin = new Admin();
         assertEquals(admin.removeAccountByName("not existing acc"), false);
-        assertEquals(accDao.getAccounts("name").size(), 1);
+        assertEquals(accDao.getAccounts("name",false).size(), 1);
     }
 }

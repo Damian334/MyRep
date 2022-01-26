@@ -30,12 +30,11 @@ public class User implements Serializable {
         this.name = name;
         this.password = password;
     }
-    
-    
+        
     public Object[] registration(String name, String password) {
         Object[] msg = {false, ""};
         if(name.trim().equals("")){
-            msg[1] = "name can't be empty \";\"";
+            msg[1] = "name can't be empty";
             return msg;
         }        
         boolean res = userDao.addUser(name, password);
@@ -66,21 +65,8 @@ public class User implements Serializable {
         }
     }
 
-    //this for admin
-    /*public Set<Account> getUserAccounts() {//looking for accoutns for only THIS user
-        Set<Account> list = new HashSet<>();
-        /*for (Account ac : accountsPool) {
-            for (Applicant ap : ac.getApplicants()) {
-                if (ap.getUser().name.equals(this.name)) {
-                    list.add(ac);
-                }
-            }
-        }
-        return list;
-    }*/
-
     public String getUserConfirmedAccountInfo() {//showing accounts of THIS user
-        List<Account> list = accDao.getAccounts(this.name);
+        List<Account> list = accDao.getAccounts(this.name,true);
         String str = "user confirmed accounts:\n";
         for (Account a : list) {
             str += "Account name: " + a.getAccountName() + " , funds: " + a.getFunds() + "\n";

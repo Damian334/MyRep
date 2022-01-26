@@ -31,8 +31,8 @@ public class AccountController {
         app.get("/accounts/withdraw", withdrawForm);
         app.post("/accounts/withdraw2", withdraw);
 
-        app.get("/transfer", transferForm);
-        app.post("/transfer2", transfer);
+        app.get("/accounts/transfer", transferForm);
+        app.post("/accounts/transfer2", transfer);
 
     }
 

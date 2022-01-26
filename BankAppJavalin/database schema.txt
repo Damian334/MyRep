@@ -25,7 +25,7 @@ CREATE TABLE applicants (
 );
 
 CREATE TABLE fundsOperations (
-    id SERIAL PRIMARY KEY, --make this automatic from 1 ... 
+    id SERIAL PRIMARY KEY,
 	message VARCHAR(150),
 	account_id NUMERIC
 );

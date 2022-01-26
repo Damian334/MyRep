@@ -82,7 +82,7 @@ public class UserTest {
         User userLoged = User.login("name", "pass");
         ac.createAccount(userLoged, "acName");
         ac.createAccount(userLoged, "acName2");
-        assertEquals(accDao.getAccounts("name").size(), 2);
+        assertEquals(accDao.getAccounts("name",false).size(), 2);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class UserTest {
         User userLoged = User.login("name", "pass");
         ac.createAccount(userLoged, "acName");// create account for user  
         ac.createAccount(userLoged, "acName");// create 2nd same account for user 
-        assertEquals(accDao.getAccounts("name").size(), 1);//the user will create only 1 account
+        assertEquals(accDao.getAccounts("name",false).size(), 1);//the user will create only 1 account
     }
 
     @Test
@@ -106,7 +106,7 @@ public class UserTest {
         Employe e = new Employe();
         int id = appDao.getAllId().get(0);
         assertEquals(e.approveAccounts("t", id), true);
-        assertEquals(accDao.getAccounts("name").size(), 1);
+        assertEquals(accDao.getAccounts("name",false).size(), 1);
     }
 
     @Test

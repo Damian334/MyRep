@@ -82,12 +82,13 @@ public class AccountDao {
         return null;
     }
 
-    public List<Account> getAccounts(String userName) {
+    public List<Account> getAccounts(String userName,boolean status) {
         List<Account> accounts = new ArrayList<>();
         try {
             Connection c = ConnectionManager.getConnection();
             String query = "Select a.* from users u,accounts a,applicants ap where u.id=ap.user_id and a.id=ap.account_id "
-                    + "and u.name = ?;";
+                    + "and u.name = ?";
+            query += status ? " and status=true;":";";
             PreparedStatement ps = c.prepareStatement(query);
             ps.setString(1, userName);
             ResultSet result = ps.executeQuery();

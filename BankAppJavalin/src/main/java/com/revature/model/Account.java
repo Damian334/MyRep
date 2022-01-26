@@ -37,7 +37,7 @@ public class Account implements Serializable {
     public Object[] createAccount(User user, String accountName) {
         Object[] msg = {false, ""};
         if (accountName.trim().equals("")) {
-            msg[1] = "accountName can't be empty \";\"";
+            msg[1] = "accountName can't be empty";
             return msg;
         }
         boolean res = accDao.addAccount(accountName, user);
